@@ -20,10 +20,9 @@ pipeline {
         stage('Build') {
             steps {
                 // Build the Maven project
-                withMaven(maven: 'Maven') {
-                    bat 'mvn clean install'
-                }
+                bat 'mvn clean install'
             }
+            
         }
         
         stage('SonarQube Analysis') {
