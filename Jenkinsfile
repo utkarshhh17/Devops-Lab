@@ -5,7 +5,7 @@ pipeline {
         // Define SonarQube server configuration
         SONARQUBE_HOME = 'sonarqube'
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_PROJECT_KEY = 'sqp_7276bea56efd650425b9785a4359eced15ea0f23'
+        SONARQUBE_PROJECT_KEY = 'squ_48235a51609579ef8fe9cab1bda747aaf3985607'
         SONARQUBE_PROJECT_NAME = 'maven'
     }
     
