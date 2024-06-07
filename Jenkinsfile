@@ -28,8 +28,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 // Run SonarQube analysis
-                withSonarQubeEnv(installationName:'sonar-server') {
-                    echo 'Build successful! SonarQube analysis completed.'
+                withSonarQubeEnv(installationName:'sonarServer') {
+                      bat 'mvn sonar:sonar -Dsonar.host.url=' + env.SONARQUBE_URL + ' -Dsonar.projectKey=' + env.SONARQUBE_PROJECT_KEY + ' -Dsonar.projectName=' + env.SONARQUBE_PROJECT_NAME
                 }
             }
         }
