@@ -36,7 +36,7 @@ pipeline {
 
         stage('Tag Docker Image') {
             steps {
-                bat "docker tag ${LOCAL_IMAGE_NAME} ${DOCKER_IMAGE_NAME}"
+                bat "docker tag ${LOCAL_IMAGE_NAME} ${DOCKER_IMAGE_NAME}:latest"
             }
         }
         stage('Docker Login and Push') {
