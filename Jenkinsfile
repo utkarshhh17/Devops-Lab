@@ -25,7 +25,7 @@ pipeline {
             }
             
         }
-        stage('Build') {
+        stage('Build Docker') {
             steps {
                 bat 'docker build -t maven-image .'
                
