@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maven-container
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: maven-app
+  template:
+    metadata:
+      labels:
+        app: maven-app
+    spec:
+      containers:
+        - name: maven-container
+          image: utkarshhh17/maven-image:latest
+          ports:
+            - containerPort: 8000
