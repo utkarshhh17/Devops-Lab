@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        dockerfile true
-    }
+    agent any
     
     
     environment {
@@ -26,6 +24,12 @@ pipeline {
                 bat 'mvn clean install'
             }
             
+        }
+        stage('Build') {
+            steps {
+                bat 'docker build -t maven-image .'
+               
+            }
         }
         
         stage('SonarQube Analysis') {
