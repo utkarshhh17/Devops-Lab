@@ -8,6 +8,9 @@ pipeline {
         SONARQUBE_URL = 'http://localhost:9000'
         SONARQUBE_PROJECT_KEY = 'squ_48235a51609579ef8fe9cab1bda747aaf3985607'
         SONARQUBE_PROJECT_NAME = 'maven'
+
+        DOCKER_IMAGE_NAME = 'utkarshhh17/maven-image'
+        LOCAL_IMAGE_NAME = 'maven-image'
     }
     
     stages {
@@ -27,8 +30,26 @@ pipeline {
         }
         stage('Build Docker') {
             steps {
-                bat 'docker build -t maven-image .'
-               
+                bat "docker build -t ${LOCAL_IMAGE_NAME} ."
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                bat "docker tag ${LOCAL_IMAGE_NAME} ${DOCKER_IMAGE_NAME}"
+            }
+        }
+        stage('Docker Login and Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        // Perform Docker login
+                        bat 'echo %DOCKERHUB_PASSWORD% | docker login -u %DOCKERHUB_USERNAME% --password-stdin'
+                        
+                        // Push the Docker image
+                        bat "docker push ${DOCKER_IMAGE_NAME}"
+                    }
+                }
             }
         }
         
