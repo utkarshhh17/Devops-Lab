@@ -1,5 +1,8 @@
 pipeline {
-    agent any
+    agent {
+        dockerfile true
+    }
+    
     
     environment {
         // Define SonarQube server configuration
@@ -33,6 +36,7 @@ pipeline {
                 }
             }
         }
+        
     }
     
     post {
