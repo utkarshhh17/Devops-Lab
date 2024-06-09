@@ -11,6 +11,9 @@ pipeline {
 
         DOCKER_IMAGE_NAME = 'utkarshhh17/maven-image'
         LOCAL_IMAGE_NAME = 'maven-image'
+
+        KUBE_NAMESPACE = 'default'
+
     }
     
     stages {
@@ -49,11 +52,15 @@ pipeline {
             }
         }
 
-        stage("Kubernetes"){
-            steps{
-                bat 'kubectl config use-context docker-desktop'
-
-                bat 'kubectl apply -f deployment.yaml' 
+        stage('Deploy to Kubernetes') {
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-credentials-id']) {
+                    bat """
+                    kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
+                    kubectl set image deployment/basic-deployment your-container-name=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
+                    kubectl rollout status deployment/basic-deployment -n ${KUBE_NAMESPACE}
+                    """
+                }
             }
         }
         
