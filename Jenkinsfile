@@ -48,6 +48,14 @@ pipeline {
                     bat "docker push ${DOCKER_IMAGE_NAME}"
             }
         }
+
+        stage("Kubernetes"){
+            steps{
+                bat 'kubectl config use-context docker-desktop'
+
+                bat 'kubectl apply -f deployment.yaml' 
+            }
+        }
         
         stage('SonarQube Analysis') {
             steps {
