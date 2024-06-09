@@ -8,6 +8,15 @@ pipeline {
         SONARQUBE_URL = 'http://localhost:9000'
         SONARQUBE_PROJECT_KEY = 'squ_48235a51609579ef8fe9cab1bda747aaf3985607'
         SONARQUBE_PROJECT_NAME = 'maven'
+
+        DOCKER_IMAGE_NAME = 'utkarshhh17/maven-image'
+        LOCAL_IMAGE_NAME = 'maven-image'
+        
+        KUBE_NAMESPACE = 'default'
+
+        DEPLOYMENT_NAME = 'maven-container'
+        CONTAINER_NAME = 'maven-container' 
+
     }
     
     stages {
@@ -25,10 +34,42 @@ pipeline {
             }
             
         }
+        stage('Test') {
+            steps {
+                // Run tests
+                bat 'mvn test'
+            }
+        }
         stage('Build Docker') {
             steps {
-                bat 'docker build -t maven-image .'
-               
+                bat "docker build -t ${LOCAL_IMAGE_NAME} ."
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                bat "docker tag ${LOCAL_IMAGE_NAME} ${DOCKER_IMAGE_NAME}:latest"
+            }
+        }
+        stage('Docker Login and Push') {
+            steps {
+                    // Perform Docker login
+                    bat 'docker login -u utkarshhh17 -p roronoazoro1'
+  
+                    // Push the Docker image
+                    bat "docker push ${DOCKER_IMAGE_NAME}"
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-credentials-id']) {
+                    bat """
+                    kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
+                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
+                    kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${KUBE_NAMESPACE}
+                    """
+                }
             }
         }
         
