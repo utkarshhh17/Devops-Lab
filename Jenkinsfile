@@ -34,6 +34,12 @@ pipeline {
             }
             
         }
+        stage('Test') {
+            steps {
+                // Run tests
+                bat 'mvn test'
+            }
+        }
         stage('Build Docker') {
             steps {
                 bat "docker build -t ${LOCAL_IMAGE_NAME} ."
