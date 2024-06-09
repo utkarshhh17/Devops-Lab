@@ -11,8 +11,11 @@ pipeline {
 
         DOCKER_IMAGE_NAME = 'utkarshhh17/maven-image'
         LOCAL_IMAGE_NAME = 'maven-image'
-
+        
         KUBE_NAMESPACE = 'default'
+
+        DEPLOYMENT_NAME = 'maven-container'
+        CONTAINER_NAME = 'maven-container' 
 
     }
     
@@ -57,8 +60,8 @@ pipeline {
                 withKubeConfig([credentialsId: 'kubeconfig-credentials-id']) {
                     bat """
                     kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
-                    kubectl set image deployment/basic-deployment your-container-name=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
-                    kubectl rollout status deployment/basic-deployment -n ${KUBE_NAMESPACE}
+                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
+                    kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${KUBE_NAMESPACE}
                     """
                 }
             }
