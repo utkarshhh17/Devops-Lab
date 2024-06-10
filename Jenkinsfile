@@ -1,7 +1,6 @@
 pipeline {
     agent any
     
-    
     environment {
         // Define SonarQube server configuration
         SONARQUBE_HOME = 'sonarqube'
@@ -9,79 +8,114 @@ pipeline {
         SONARQUBE_PROJECT_KEY = 'squ_48235a51609579ef8fe9cab1bda747aaf3985607'
         SONARQUBE_PROJECT_NAME = 'maven'
 
-        DOCKER_IMAGE_NAME = 'utkarshhh17/maven-image'
-        LOCAL_IMAGE_NAME = 'maven-image'
+        DOCKER_IMAGE_BACKEND = 'utkarshhh17/maven-image'
+        DOCKER_IMAGE_FRONTEND = 'utkarshhh17/frontend-image'
         
+        LOCAL_IMAGE_NAME_BACKEND = 'maven-image'
+        LOCAL_IMAGE_NAME_FRONTEND = 'frontend-image'
+
         KUBE_NAMESPACE = 'default'
 
-        DEPLOYMENT_NAME = 'maven-container'
-        CONTAINER_NAME = 'maven-container' 
-
+        DEPLOYMENT_NAME_BACKEND = 'maven-container'
+        DEPLOYMENT_NAME_FRONTEND = 'frontend-container'
+        
+        CONTAINER_NAME_BACKEND = 'maven-container' 
+        CONTAINER_NAME_FRONTEND = 'frontend-container' 
     }
     
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the Git repository
-                git 'https://github.com/utkarshhh17/Devops-Lab'
+                // Checkout the code from the Git repository for both frontend and backend
+                git branch: 'main', url: 'https://github.com/utkarshhh17/Devops-Lab'
             }
         }
         
-        stage('Build') {
+        stage('Build and Test Backend') {
             steps {
-                // Build the Maven project
-                bat 'mvn clean install'
-            }
-            
-        }
-        stage('Test') {
-            steps {
-                // Run tests
-                bat 'mvn test'
-            }
-        }
-        stage('Build Docker') {
-            steps {
-                bat "docker build -t ${LOCAL_IMAGE_NAME} ."
+                dir('backend') {
+                    // Build and test the Maven project
+                    bat 'mvn clean install'
+                }
             }
         }
 
-        stage('Tag Docker Image') {
+        stage('Build Backend Docker Image') {
             steps {
-                bat "docker tag ${LOCAL_IMAGE_NAME} ${DOCKER_IMAGE_NAME}:latest"
+                dir('backend') {
+                    // Build Docker image for backend
+                    bat "docker build -t ${LOCAL_IMAGE_NAME_BACKEND} ."
+                }
             }
         }
-        stage('Docker Login and Push') {
+
+        stage('Tag and Push Backend Docker Image') {
             steps {
-                    // Perform Docker login
-                    bat 'docker login -u utkarshhh17 -p roronoazoro1'
-  
-                    // Push the Docker image
-                    bat "docker push ${DOCKER_IMAGE_NAME}"
+                dir('backend') {
+                    // Tag and push Docker image for backend
+                    bat "docker tag ${LOCAL_IMAGE_NAME_BACKEND} ${DOCKER_IMAGE_BACKEND}:latest"
+                    bat "docker push ${DOCKER_IMAGE_BACKEND}"
+                }
+            }
+        }
+
+        stage('Build and Test Frontend') {
+            steps {
+                dir('frontend') {
+                    // Build and test frontend (if applicable)
+                    bat 'npm install'
+                    bat 'npm test'
+                }
+            }
+        }
+
+        stage('Build Frontend Docker Image') {
+            steps {
+                dir('frontend') {
+                    // Build Docker image for frontend
+                    bat "docker build -t ${LOCAL_IMAGE_NAME_FRONTEND} ."
+                }
+            }
+        }
+
+        stage('Tag and Push Frontend Docker Image') {
+            steps {
+                dir('frontend') {
+                    // Tag and push Docker image for frontend
+                    bat "docker tag ${LOCAL_IMAGE_NAME_FRONTEND} ${DOCKER_IMAGE_FRONTEND}:latest"
+                    bat "docker push ${DOCKER_IMAGE_FRONTEND}"
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig-credentials-id']) {
-                    bat """
-                    kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
-                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
-                    kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${KUBE_NAMESPACE}
-                    """
+                    dir('backend') {
+                        // Deploy backend to Kubernetes
+                        bat """
+                        kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
+                        kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
+                        kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${KUBE_NAMESPACE}
+                        """
+                    }
+                    dir('frontend') {
+                        // Deploy frontend to Kubernetes (if applicable)
+                        // Add similar deployment commands as for backend
+                    }
                 }
             }
         }
-        
+
         stage('SonarQube Analysis') {
             steps {
-                // Run SonarQube analysis
                 withSonarQubeEnv(installationName:'sonarServer') {
-                      bat 'mvn sonar:sonar -Dsonar.host.url=' + env.SONARQUBE_URL + ' -Dsonar.projectKey=' + env.SONARQUBE_PROJECT_KEY + ' -Dsonar.projectName=' + env.SONARQUBE_PROJECT_NAME
+                    dir('backend') {
+                        bat 'mvn sonar:sonar -Dsonar.host.url=' + env.SONARQUBE_URL + ' -Dsonar.projectKey=' + env.SONARQUBE_PROJECT_KEY + ' -Dsonar.projectName=' + env.SONARQUBE_PROJECT_NAME
+                    }
                 }
             }
         }
-        
     }
     
     post {
