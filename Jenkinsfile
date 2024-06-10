@@ -94,7 +94,7 @@ pipeline {
                     dir('backend') {
                         bat """
                         kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
-                        kubectl set image deployment/${DEPLOYMENT_NAME_BACKEND} ${CONTAINER_NAME}=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
+                        kubectl set image deployment/${DEPLOYMENT_NAME_BACKEND} ${CONTAINER_NAME_BACKEND}=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
                         kubectl rollout status deployment/${DEPLOYMENT_NAME_BACKEND} -n ${KUBE_NAMESPACE}
                         """
                     }
