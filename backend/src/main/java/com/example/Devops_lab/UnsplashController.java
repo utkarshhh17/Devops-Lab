@@ -46,4 +46,9 @@ public class UnsplashController {
 
         return ResponseEntity.ok(posts);
     }
+
+    @GetMapping("/hello")
+    public String getHello() {
+        return "Hello world";
+    }
 }

@@ -27,4 +27,6 @@ public class DevopsLabApplication {
 		SpringApplication.run(DevopsLabApplication.class, args);
 	}
 
+
+
 }
