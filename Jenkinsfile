@@ -61,7 +61,7 @@ pipeline {
 
         stage('Build and Test Frontend') {
             steps {
-                dir('frontend') {
+                dir('client') {
                     // Build and test frontend (if applicable)
                     bat 'npm install'
                     bat 'npm test'
@@ -71,7 +71,7 @@ pipeline {
 
         stage('Build Frontend Docker Image') {
             steps {
-                dir('frontend') {
+                dir('client') {
                     // Build Docker image for frontend
                     bat "docker build -t ${LOCAL_IMAGE_NAME_FRONTEND} ."
                 }
@@ -80,7 +80,7 @@ pipeline {
 
         stage('Tag and Push Frontend Docker Image') {
             steps {
-                dir('frontend') {
+                dir('client') {
                     // Tag and push Docker image for frontend
                     bat "docker tag ${LOCAL_IMAGE_NAME_FRONTEND} ${DOCKER_IMAGE_FRONTEND}:latest"
                     bat "docker push ${DOCKER_IMAGE_FRONTEND}"
@@ -99,7 +99,7 @@ pipeline {
                         kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${KUBE_NAMESPACE}
                         """
                     }
-                    dir('frontend') {
+                    dir('client') {
                         // Deploy frontend to Kubernetes (if applicable)
                         // Add similar deployment commands as for backend
                     }
