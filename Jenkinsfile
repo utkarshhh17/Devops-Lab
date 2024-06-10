@@ -26,8 +26,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the Git repository for both frontend and backend
-                git branch: 'main', url: 'https://github.com/utkarshhh17/Devops-Lab'
+                // Checkout the code from the Git repository
+                git 'https://github.com/utkarshhh17/Devops-Lab'
             }
         }
         
