@@ -92,17 +92,13 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig-credentials-id']) {
                     dir('backend') {
-                        // Deploy backend to Kubernetes
                         bat """
                         kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
                         kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_IMAGE_NAME}:latest -n ${KUBE_NAMESPACE}
                         kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${KUBE_NAMESPACE}
                         """
                     }
-                    dir('client') {
-                        // Deploy frontend to Kubernetes (if applicable)
-                        // Add similar deployment commands as for backend
-                    }
+                   
                 }
             }
         }
