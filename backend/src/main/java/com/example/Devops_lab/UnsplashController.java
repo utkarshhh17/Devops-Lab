@@ -24,7 +24,6 @@ public class UnsplashController {
     @GetMapping("/")
     public ResponseEntity<List<Map<String, Object>>> hello() {
         List<Map<String, Object>> posts;
-        boolean loading = true;
 
         try {
             ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
@@ -36,12 +35,9 @@ public class UnsplashController {
             posts = response.getBody();
             page++;
             System.out.println("Page number is: " + page);
-            loading = false;
         } catch (Exception e) {
             System.err.println("Error fetching posts: " + e.getMessage());
             return ResponseEntity.status(500).body(null);
-        } finally {
-            loading = false;
         }
 
         return ResponseEntity.ok(posts);
