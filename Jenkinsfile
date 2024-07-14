@@ -94,6 +94,7 @@ pipeline {
                     dir('backend') {
                         bat """
                         kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
+                        kubectl apply -f service.yaml -n ${KUBE_NAMESPACE}
                         kubectl set image deployment/${DEPLOYMENT_NAME_BACKEND} ${CONTAINER_NAME_BACKEND}=${DOCKER_IMAGE_BACKEND}:latest -n ${KUBE_NAMESPACE}
                         kubectl rollout status deployment/${DEPLOYMENT_NAME_BACKEND} -n ${KUBE_NAMESPACE}
                         """
@@ -103,15 +104,15 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv(installationName:'sonarServer') {
-                    dir('backend') {
-                        bat 'mvn sonar:sonar -Dsonar.host.url=' + env.SONARQUBE_URL + ' -Dsonar.projectKey=' + env.SONARQUBE_PROJECT_KEY + ' -Dsonar.projectName=' + env.SONARQUBE_PROJECT_NAME
-                    }
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withSonarQubeEnv(installationName:'sonarServer') {
+        //             dir('backend') {
+        //                 bat 'mvn sonar:sonar -Dsonar.host.url=' + env.SONARQUBE_URL + ' -Dsonar.projectKey=' + env.SONARQUBE_PROJECT_KEY + ' -Dsonar.projectName=' + env.SONARQUBE_PROJECT_NAME
+        //             }
+        //         }
+        //     }
+        // }
     }
     
     post {

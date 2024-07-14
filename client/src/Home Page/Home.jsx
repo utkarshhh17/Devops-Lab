@@ -39,7 +39,7 @@ export default function Home(){
     const fetchPosts = async () => {
         setLoading(true);
         try {
-          const response = await axios.get(`http://localhost:8000`);
+          const response = await axios.get(`http://localhost:80`);
           setPosts(prevPosts => [...prevPosts, ...response.data]);
         //   setPage(prevPage => prevPage + 1);
           console.log(response.data)
