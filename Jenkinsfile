@@ -5,7 +5,7 @@ pipeline {
         // Define SonarQube server configuration
         SONARQUBE_HOME = 'sonarqube'
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_PROJECT_KEY = 'squ_48235a51609579ef8fe9cab1bda747aaf3985607'
+        SONARQUBE_PROJECT_KEY = 'squ_e44eaa7df2733f6cd2db8444641e8fdd1a4f7bbc'
         SONARQUBE_PROJECT_NAME = 'maven'
 
         DOCKER_IMAGE_BACKEND = 'utkarshhh17/maven-image'
@@ -104,15 +104,15 @@ pipeline {
             }
         }
 
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         withSonarQubeEnv(installationName:'sonarServer') {
-        //             dir('backend') {
-        //                 bat 'mvn sonar:sonar -Dsonar.host.url=' + env.SONARQUBE_URL + ' -Dsonar.projectKey=' + env.SONARQUBE_PROJECT_KEY + ' -Dsonar.projectName=' + env.SONARQUBE_PROJECT_NAME
-        //             }
-        //         }
-        //     }
-        // }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(installationName:'sonarServer') {
+                    dir('backend') {
+                        bat 'mvn sonar:sonar -Dsonar.host.url=' + env.SONARQUBE_URL + ' -Dsonar.projectKey=' + env.SONARQUBE_PROJECT_KEY + ' -Dsonar.projectName=' + env.SONARQUBE_PROJECT_NAME
+                    }
+                }
+            }
+        }
     }
     
     post {
