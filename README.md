@@ -1,6 +1,6 @@
 # PicsFlow:Infinite Image Scroller
 
-The Infinite Image Scroller is a web application built with React.js and Spring Boot that provides a seamless scrolling experience through a collection of images.
+The PicsFlow:Infinite Image Scroller is a web application built with React.js and Spring Boot that provides a seamless scrolling experience through a collection of images.
 
 ## Features
 
